@@ -1,5 +1,5 @@
 {
-  description = "My Nix, NixOS and Home-Manager config based on flakes.";
+  description = "Monolito: a single configuration to rule them all";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -14,8 +14,8 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    try = {
-      url = "github:tobi/try";
+    import-tree = {
+      url = "github:vic/import-tree";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -26,17 +26,6 @@
 
   };
 
-  outputs =
-    inputs@{ flake-parts, self, ... }:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } (
-      { ... }:
-      {
-        systems = [ "x86_64-linux" ];
-
-        imports = [
-          ./hosts
-          ./modules/devShell.nix
-        ];
-      }
-    );
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; }
+    (inputs.import-tree ./modules);
 }
